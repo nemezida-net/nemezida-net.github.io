@@ -1,0 +1,2309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BDesign</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;700&family=Playfair+Display:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Russo+One&family=Unbounded:wght@400;700;900&family=Exo+2:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --bg: #0a0a0c;
+  --surface: #111116;
+  --surface2: #18181f;
+  --surface3: #22222c;
+  --border: #2a2a38;
+  --accent: #6c63ff;
+  --accent2: #00d4ff;
+  --accent3: #ff6b6b;
+  --text: #f0f0f8;
+  --text2: #8888aa;
+  --text3: #555570;
+  --panel-w: 280px;
+  --prop-w: 260px;
+  --header-h: 52px;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13px; }
+
+/* ─── HEADER ─── */
+#header {
+  height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; z-index: 100; position: relative;
+  user-select: none;
+}
+#logo {
+  display: flex; align-items: center; gap: 9px;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px;
+  letter-spacing: -0.3px;
+}
+#logo svg { width: 28px; height: 28px; }
+#logo .brand { color: var(--text); }
+#logo .dot { color: var(--accent); }
+
+.mode-tabs {
+  display: flex; gap: 4px; margin-left: 16px;
+  background: var(--surface2); border-radius: 8px; padding: 3px;
+}
+.mode-tab {
+  padding: 5px 14px; border-radius: 6px; cursor: pointer;
+  font-weight: 600; font-size: 12px; color: var(--text2);
+  transition: all .2s; border: none; background: transparent;
+}
+.mode-tab.active {
+  background: var(--accent); color: #fff;
+}
+
+.header-spacer { flex: 1; }
+
+.hdr-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 7px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: none; transition: all .15s;
+}
+.hdr-btn.outline {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text2);
+}
+.hdr-btn.outline:hover { border-color: var(--accent); color: var(--accent); }
+.hdr-btn.primary { background: var(--accent); color: #fff; }
+.hdr-btn.primary:hover { background: #7c75ff; }
+
+.canvas-size-select {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 5px 8px;
+  font-size: 12px; font-family: 'Outfit', sans-serif; cursor: pointer;
+}
+
+/* ─── LAYOUT ─── */
+#app {
+  display: flex;
+  height: calc(100vh - var(--header-h));
+}
+
+/* ─── LEFT PANEL ─── */
+#left-panel {
+  width: var(--panel-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.panel-tabs {
+  display: flex; background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+}
+.panel-tabs::-webkit-scrollbar { display: none; }
+.ptab {
+  flex-shrink: 0; padding: 9px 12px;
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  color: var(--text3); border-bottom: 2px solid transparent;
+  transition: all .15s; white-space: nowrap;
+}
+.ptab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.ptab:hover:not(.active) { color: var(--text2); }
+
+.panel-content {
+  flex: 1; overflow-y: auto; padding: 12px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+
+/* ─── SECTION LABELS ─── */
+.sec-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--text3); margin: 12px 0 8px;
+}
+.sec-label:first-child { margin-top: 0; }
+
+/* ─── BACKGROUNDS ─── */
+.bg-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.bg-thumb {
+  aspect-ratio: 16/9; border-radius: 6px;
+  cursor: pointer; border: 2px solid transparent;
+  transition: all .15s; overflow: hidden; position: relative;
+}
+.bg-thumb:hover { border-color: var(--accent); transform: scale(1.03); }
+.bg-thumb.selected { border-color: var(--accent2); }
+.bg-thumb .label {
+  position: absolute; bottom: 4px; left: 0; right: 0;
+  text-align: center; font-size: 9px; font-weight: 600;
+  color: rgba(255,255,255,.7); text-shadow: 0 1px 3px rgba(0,0,0,.8);
+}
+
+/* ─── ELEMENTS ─── */
+.elem-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.elem-btn {
+  aspect-ratio: 1; border-radius: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px; cursor: pointer;
+  transition: all .15s; font-size: 10px; color: var(--text2);
+  font-weight: 600;
+}
+.elem-btn:hover { background: var(--surface3); border-color: var(--accent); color: var(--accent); }
+.elem-btn .icon { font-size: 22px; line-height: 1; }
+
+/* ─── TEXT PANEL ─── */
+.font-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 5px; margin-bottom: 8px;
+}
+.font-btn {
+  padding: 8px; border-radius: 6px;
+  background: var(--surface2); border: 1px solid var(--border);
+  cursor: pointer; text-align: center; font-size: 13px;
+  transition: all .15s; color: var(--text);
+}
+.font-btn:hover { border-color: var(--accent); }
+.font-btn.selected { border-color: var(--accent); background: rgba(108,99,255,.15); }
+
+/* ─── EMOJI ─── */
+.emoji-search {
+  width: 100%; padding: 7px 10px; border-radius: 7px;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); font-family: 'Outfit'; font-size: 13px;
+  margin-bottom: 8px; outline: none;
+}
+.emoji-search:focus { border-color: var(--accent); }
+.emoji-categories { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+.emoji-cat-btn {
+  font-size: 16px; padding: 3px 6px; border-radius: 5px;
+  cursor: pointer; background: var(--surface2); border: 1px solid transparent;
+  transition: all .12s;
+}
+.emoji-cat-btn:hover, .emoji-cat-btn.active { border-color: var(--accent); background: var(--surface3); }
+.emoji-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 3px; }
+.emoji-item {
+  font-size: 20px; text-align: center; cursor: pointer;
+  padding: 4px; border-radius: 5px; transition: all .12s;
+}
+.emoji-item:hover { background: var(--surface3); transform: scale(1.2); }
+
+/* ─── 3D OBJECTS ─── */
+.obj3d-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.obj3d-btn {
+  aspect-ratio: 1; border-radius: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 6px; cursor: pointer;
+  transition: all .15s; font-size: 10px; color: var(--text2);
+  font-weight: 600; overflow: hidden; position: relative;
+}
+.obj3d-btn:hover { border-color: var(--accent); }
+.obj3d-preview { width: 50px; height: 50px; pointer-events: none; }
+
+/* ─── BADGE PANEL ─── */
+.badge-shapes { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.badge-shape-btn {
+  padding: 6px 12px; border-radius: 6px;
+  background: var(--surface2); border: 1px solid var(--border);
+  cursor: pointer; font-size: 11px; font-weight: 600; color: var(--text2);
+  transition: all .15s;
+}
+.badge-shape-btn:hover, .badge-shape-btn.active { border-color: var(--accent); color: var(--accent); }
+
+/* ─── LOGO MODE ─── */
+.logo-tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.logo-tool-btn {
+  padding: 10px; border-radius: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  cursor: pointer; text-align: center; font-size: 10px; font-weight: 600;
+  color: var(--text2); transition: all .15s;
+}
+.logo-tool-btn:hover { border-color: var(--accent); color: var(--accent); }
+.logo-tool-btn .icon { font-size: 20px; display: block; margin-bottom: 4px; }
+
+/* ─── CENTER ─── */
+#canvas-area {
+  flex: 1; overflow: hidden; position: relative;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(108,99,255,.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(0,212,255,.04) 0%, transparent 50%),
+    #0e0e14;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* checkerboard bg for canvas area */
+#canvas-area::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(45deg, #1a1a22 25%, transparent 25%),
+    linear-gradient(-45deg, #1a1a22 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1a1a22 75%),
+    linear-gradient(-45deg, transparent 75%, #1a1a22 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  opacity: .3;
+  pointer-events: none;
+}
+
+#canvas-wrapper {
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 32px 80px rgba(0,0,0,.8);
+  transform-origin: center center;
+}
+
+#canvas {
+  position: relative;
+  overflow: hidden;
+  /* size set by JS */
+}
+
+/* ─── ELEMENTS ON CANVAS ─── */
+.c-element {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  transition: outline .1s;
+}
+.c-element.selected {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.c-element .resize-handle {
+  display: none;
+  position: absolute; bottom: -5px; right: -5px;
+  width: 10px; height: 10px;
+  background: var(--accent); border-radius: 2px;
+  cursor: se-resize; z-index: 10;
+}
+.c-element.selected .resize-handle { display: block; }
+.c-element .rotate-handle {
+  display: none;
+  position: absolute; top: -20px; left: 50%;
+  transform: translateX(-50%);
+  width: 14px; height: 14px;
+  background: var(--accent2); border-radius: 50%;
+  cursor: crosshair; z-index: 10;
+  font-size: 10px; line-height: 14px; text-align: center;
+}
+.c-element.selected .rotate-handle { display: block; }
+.c-element .delete-btn {
+  display: none;
+  position: absolute; top: -20px; right: -6px;
+  width: 16px; height: 16px;
+  background: var(--accent3); border-radius: 50%;
+  cursor: pointer; z-index: 10;
+  font-size: 10px; line-height: 16px; text-align: center; color: #fff;
+}
+.c-element.selected .delete-btn { display: block; }
+
+/* Text element */
+.c-text { line-height: 1.2; white-space: nowrap; }
+
+/* Badge element */
+.c-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.2);
+  white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+}
+.c-badge .badge-logo { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+.c-badge-rect { border-radius: 12px; }
+.c-badge-square { border-radius: 6px; }
+
+/* Shape element */
+.c-shape { border-radius: inherit; }
+
+/* Image element */
+.c-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+/* Emoji element */
+.c-emoji { font-size: inherit; line-height: 1; }
+
+/* ─── RIGHT PANEL ─── */
+#right-panel {
+  width: var(--prop-w);
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+#right-panel-title {
+  padding: 12px 16px; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text3); border-bottom: 1px solid var(--border);
+}
+#props {
+  flex: 1; overflow-y: auto; padding: 12px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+
+/* ─── CONTROLS ─── */
+.ctrl-row {
+  display: flex; align-items: center;
+  gap: 8px; margin-bottom: 8px;
+}
+.ctrl-label {
+  font-size: 11px; font-weight: 600; color: var(--text2);
+  min-width: 68px; flex-shrink: 0;
+}
+.ctrl-input {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 5px 8px;
+  font-family: 'Outfit'; font-size: 12px; outline: none;
+  transition: border-color .15s;
+}
+.ctrl-input:focus { border-color: var(--accent); }
+input[type=range].ctrl-input {
+  padding: 0; height: 4px; cursor: pointer; accent-color: var(--accent);
+}
+input[type=color].ctrl-input { padding: 2px; height: 28px; cursor: pointer; }
+
+.ctrl-btn-row { display: flex; gap: 4px; margin-bottom: 8px; }
+.ctrl-btn {
+  flex: 1; padding: 6px; border-radius: 6px;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); cursor: pointer; font-size: 11px;
+  font-weight: 600; transition: all .15s; text-align: center;
+}
+.ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+.ctrl-btn.active { background: rgba(108,99,255,.2); border-color: var(--accent); color: var(--accent); }
+
+.divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+/* ─── TEMPLATE GRID ─── */
+.template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.template-thumb {
+  aspect-ratio: 16/9; border-radius: 6px;
+  cursor: pointer; border: 2px solid transparent;
+  transition: all .15s; overflow: hidden; position: relative;
+}
+.template-thumb:hover { border-color: var(--accent); transform: scale(1.03); }
+.template-thumb.logo { aspect-ratio: 1; border-radius: 8px; }
+.template-thumb .t-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 3px 5px; text-align: center;
+  font-size: 9px; font-weight: 600; color: #fff;
+  background: linear-gradient(transparent, rgba(0,0,0,.7));
+}
+
+/* ─── TOAST ─── */
+#toast {
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: var(--surface3); border: 1px solid var(--border);
+  padding: 10px 20px; border-radius: 20px; font-size: 13px;
+  font-weight: 600; color: var(--text); z-index: 9999;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ─── SCROLLBARS ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ─── LOGO MODE SPECIFIC ─── */
+#logo-mode-overlay {
+  display: none;
+  position: absolute; inset: 0; z-index: 10;
+  pointer-events: none;
+}
+body.logo-mode #logo-mode-overlay { display: block; }
+
+/* Upload dropzone */
+.dropzone {
+  border: 2px dashed var(--border); border-radius: 8px;
+  padding: 16px; text-align: center; cursor: pointer;
+  color: var(--text3); font-size: 12px; transition: all .2s;
+  margin-bottom: 8px;
+}
+.dropzone:hover { border-color: var(--accent); color: var(--accent); }
+
+/* color swatch row */
+.swatch-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+.swatch {
+  width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: all .15s;
+}
+.swatch:hover, .swatch.active { border-color: #fff; transform: scale(1.2); }
+
+/* Gradient presets */
+.grad-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; margin-bottom: 8px; }
+.grad-btn {
+  height: 24px; border-radius: 5px; cursor: pointer;
+  border: 2px solid transparent; transition: all .15s;
+}
+.grad-btn:hover { border-color: #fff; transform: scale(1.05); }
+
+/* popup / modal */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.7); z-index: 500;
+  align-items: center; justify-content: center;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; min-width: 320px;
+  max-width: 480px; width: 100%;
+}
+.modal h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+.modal-close {
+  float: right; cursor: pointer; font-size: 18px; color: var(--text3);
+  background: none; border: none; color: var(--text2);
+}
+
+/* zoom controls */
+#zoom-controls {
+  position: absolute; bottom: 16px; right: 16px;
+  display: flex; gap: 4px; z-index: 50;
+}
+.zoom-btn {
+  width: 32px; height: 32px; border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.zoom-btn:hover { border-color: var(--accent); color: var(--accent); }
+#zoom-label {
+  padding: 0 10px; border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text2); font-size: 11px; font-weight: 600;
+  display: flex; align-items: center;
+}
+
+/* ─── 3D CSS OBJECTS ─── */
+.obj-3d-sphere {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e0e0ff, #6c63ff 60%, #1a1a40);
+  box-shadow: inset -8px -8px 20px rgba(0,0,0,.5), 6px 6px 20px rgba(108,99,255,.4);
+}
+.obj-3d-ring {
+  width: 80px; height: 80px;
+  border: 14px solid rgba(255,255,255,.85);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(108,99,255,.6), inset 0 0 10px rgba(0,0,0,.4);
+}
+.obj-3d-cube-wrap {
+  perspective: 200px;
+  width: 60px; height: 60px;
+}
+.obj-3d-cube {
+  width: 50px; height: 50px;
+  transform-style: preserve-3d;
+  transform: rotateX(-20deg) rotateY(30deg);
+  position: relative;
+}
+.obj-3d-cube .face {
+  position: absolute; width: 50px; height: 50px;
+  border: 2px solid rgba(255,255,255,.3);
+}
+.face.front  { background: rgba(108,99,255,.7); transform: translateZ(25px); }
+.face.back   { background: rgba(80,70,200,.7);  transform: rotateY(180deg) translateZ(25px); }
+.face.left   { background: rgba(60,50,160,.7);  transform: rotateY(-90deg) translateZ(25px); }
+.face.right  { background: rgba(130,120,255,.7); transform: rotateY(90deg) translateZ(25px); }
+.face.top    { background: rgba(150,140,255,.8); transform: rotateX(90deg) translateZ(25px); }
+.face.bottom { background: rgba(40,30,120,.7);   transform: rotateX(-90deg) translateZ(25px); }
+
+.obj-3d-torus {
+  width: 70px; height: 70px; position: relative;
+}
+.obj-3d-diamond {
+  width: 0; height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 50px solid rgba(108,99,255,.8);
+  position: relative; filter: drop-shadow(0 8px 15px rgba(108,99,255,.5));
+}
+
+/* noselect */
+.noselect { user-select: none; -webkit-user-select: none; }
+
+/* canvas bg presets inline styles done by JS */
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast">✓ Готово</div>
+
+<!-- HEADER -->
+<div id="header">
+  <div id="logo">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Blackhole Booster logo recreation -->
+      <ellipse cx="50" cy="50" rx="32" ry="32" fill="none" stroke="white" stroke-width="10"/>
+      <ellipse cx="50" cy="55" rx="42" ry="12" fill="white"/>
+      <ellipse cx="50" cy="55" rx="24" ry="7" fill="#0a0a0c"/>
+      <circle cx="50" cy="50" r="12" fill="#0a0a0c"/>
+      <circle cx="50" cy="50" r="6" fill="white"/>
+    </svg>
+    <span class="brand">B<span class="dot">Design</span></span>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('post')">📱 Пост</button>
+    <button class="mode-tab" onclick="setMode('logo')">🔷 Логотип</button>
+  </div>
+
+  <div class="header-spacer"></div>
+
+  <select class="canvas-size-select" onchange="setCanvasSize(this.value)" id="size-select">
+    <optgroup label="Telegram Posts">
+      <option value="1280x720">TG Горизонт. 1280×720</option>
+      <option value="1080x1080">TG Квадрат 1080×1080</option>
+      <option value="1080x1920">TG Сторис 1080×1920</option>
+      <option value="720x900">TG Вертикаль 720×900</option>
+    </optgroup>
+    <optgroup label="Логотип">
+      <option value="500x500">Логотип 500×500</option>
+      <option value="800x400">Логотип Широкий 800×400</option>
+      <option value="400x400">Иконка 400×400</option>
+    </optgroup>
+    <optgroup label="Кастом">
+      <option value="custom">✏ Свой размер...</option>
+    </optgroup>
+  </select>
+
+  <button class="hdr-btn outline" onclick="clearCanvas()">🗑 Очистить</button>
+  <button class="hdr-btn outline" onclick="undoAction()">↩ Отмена</button>
+  <button class="hdr-btn primary" onclick="exportImage()">⬇ Экспорт PNG</button>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- LEFT PANEL -->
+  <div id="left-panel">
+    <div class="panel-tabs" id="left-tabs">
+      <div class="ptab active" data-tab="templates" onclick="switchTab('templates',this)">Шаблоны</div>
+      <div class="ptab" data-tab="backgrounds" onclick="switchTab('backgrounds',this)">Фоны</div>
+      <div class="ptab" data-tab="text" onclick="switchTab('text',this)">Текст</div>
+      <div class="ptab" data-tab="elements" onclick="switchTab('elements',this)">Фигуры</div>
+      <div class="ptab" data-tab="badge" onclick="switchTab('badge',this)">Бейдж</div>
+      <div class="ptab" data-tab="emoji" onclick="switchTab('emoji',this)">Эмодзи</div>
+      <div class="ptab" data-tab="objects3d" onclick="switchTab('objects3d',this)">3D</div>
+      <div class="ptab" data-tab="images" onclick="switchTab('images',this)">Файл</div>
+    </div>
+    <div class="panel-content" id="left-content"></div>
+  </div>
+
+  <!-- CANVAS AREA -->
+  <div id="canvas-area">
+    <div id="canvas-wrapper">
+      <div id="canvas"></div>
+    </div>
+    <div id="zoom-controls">
+      <button class="zoom-btn" onclick="changeZoom(-0.1)">−</button>
+      <div id="zoom-label">100%</div>
+      <button class="zoom-btn" onclick="changeZoom(0.1)">+</button>
+      <button class="zoom-btn" onclick="fitCanvas()" title="Подогнать">⌂</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="right-panel">
+    <div id="right-panel-title">Свойства</div>
+    <div id="props">
+      <div style="color:var(--text3);font-size:12px;text-align:center;margin-top:40px;">
+        Выберите элемент<br>для редактирования
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Badge Modal -->
+<div class="overlay" id="badge-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('badge-modal')">×</button>
+    <h3>🏷 Добавить бейдж</h3>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Текст</span>
+      <input class="ctrl-input" id="badge-text-input" value="Blackhole Booster" type="text">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Форма</span>
+      <div class="badge-shapes">
+        <button class="badge-shape-btn active" data-shape="pill" onclick="selectBadgeShape(this,'pill')">Пилюля</button>
+        <button class="badge-shape-btn" data-shape="rect" onclick="selectBadgeShape(this,'rect')">Прямоуг.</button>
+        <button class="badge-shape-btn" data-shape="square" onclick="selectBadgeShape(this,'square')">Квадрат</button>
+      </div>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Фон</span>
+      <input class="ctrl-input" type="color" id="badge-bg-color" value="#ffffff22">
+      <span class="ctrl-label" style="min-width:40px">Текст</span>
+      <input class="ctrl-input" type="color" id="badge-text-color" value="#ffffff">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Иконка</span>
+    </div>
+    <div class="dropzone" onclick="document.getElementById('badge-logo-file').click()">
+      <div style="font-size:24px">🖼</div>
+      <div>Загрузить логотип (PNG/SVG)</div>
+      <input type="file" id="badge-logo-file" accept="image/*" style="display:none" onchange="loadBadgeLogo(this)">
+    </div>
+    <div id="badge-logo-preview" style="display:none;text-align:center;margin-bottom:8px">
+      <img id="badge-logo-img" style="height:40px;border-radius:6px">
+      <button onclick="clearBadgeLogo()" style="display:block;margin:4px auto;background:none;border:none;color:var(--accent3);cursor:pointer;font-size:11px">Удалить</button>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Градиент</span>
+      <div class="grad-row" style="flex:1">
+        <div class="grad-btn" style="background:linear-gradient(135deg,#6c63ff,#00d4ff)" onclick="setBadgeGrad('linear-gradient(135deg,#6c63ff,#00d4ff)')"></div>
+        <div class="grad-btn" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d)" onclick="setBadgeGrad('linear-gradient(135deg,#ff6b6b,#ffd93d)')"></div>
+        <div class="grad-btn" style="background:linear-gradient(135deg,#11998e,#38ef7d)" onclick="setBadgeGrad('linear-gradient(135deg,#11998e,#38ef7d)')"></div>
+        <div class="grad-btn" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2)" onclick="setBadgeGrad('rgba(255,255,255,.12)')">стекло</div>
+        <div class="grad-btn" style="background:#000" onclick="setBadgeGrad('#000')">чёрный</div>
+        <div class="grad-btn" style="background:linear-gradient(135deg,#1a1a40,#2d2d80)" onclick="setBadgeGrad('linear-gradient(135deg,#1a1a40,#2d2d80)')"></div>
+      </div>
+    </div>
+    <button class="hdr-btn primary" style="width:100%;justify-content:center;margin-top:8px" onclick="addBadge()">Добавить на холст</button>
+  </div>
+</div>
+
+<!-- 3D Object Modal -->
+<div class="overlay" id="obj3d-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('obj3d-modal')">×</button>
+    <h3>🎲 3D Объект</h3>
+    <div id="obj3d-preview-large" style="display:flex;justify-content:center;align-items:center;height:120px;margin-bottom:12px;background:var(--surface2);border-radius:8px"></div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Размер</span>
+      <input class="ctrl-input" type="range" id="obj3d-size" min="60" max="300" value="120">
+      <span id="obj3d-size-val" style="min-width:36px;color:var(--text2);font-size:11px">120px</span>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Цвет 1</span>
+      <input class="ctrl-input" type="color" id="obj3d-color1" value="#6c63ff">
+      <span class="ctrl-label" style="min-width:40px">Цвет 2</span>
+      <input class="ctrl-input" type="color" id="obj3d-color2" value="#00d4ff">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">RotX</span>
+      <input class="ctrl-input" type="range" id="obj3d-rotx" min="-180" max="180" value="-20">
+      <span class="ctrl-label" style="min-width:40px">RotY</span>
+      <input class="ctrl-input" type="range" id="obj3d-roty" min="-180" max="180" value="30">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Свечение</span>
+      <input class="ctrl-input" type="range" id="obj3d-glow" min="0" max="60" value="20">
+    </div>
+    <button class="hdr-btn primary" style="width:100%;justify-content:center;margin-top:8px" onclick="addObj3D()">Добавить на холст</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let state = {
+  mode: 'post',
+  canvasW: 1280, canvasH: 720,
+  zoom: 0.5,
+  elements: [],
+  selected: null,
+  history: [],
+  bg: { type: 'solid', value: '#0a0a0c' },
+  badgeShape: 'pill',
+  badgeBg: 'rgba(255,255,255,.12)',
+  badgeLogoData: null,
+  obj3dType: null,
+};
+
+let dragEl = null, dragStartX, dragStartY, elStartX, elStartY;
+let resizing = false, rotating = false;
+let elId = 0;
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  applyCanvasSize();
+  fitCanvas();
+  renderLeftPanel('templates');
+  renderProps(null);
+  applyBg();
+  window.addEventListener('resize', fitCanvas);
+});
+
+// ═══════════════════════════════════════════════════════
+//  MODE
+// ═══════════════════════════════════════════════════════
+function setMode(m) {
+  state.mode = m;
+  document.querySelectorAll('.mode-tab').forEach((t,i)=>{
+    t.classList.toggle('active', (i===0&&m==='post')||(i===1&&m==='logo'));
+  });
+  const ss = document.getElementById('size-select');
+  if(m==='logo') { ss.value='500x500'; setCanvasSize('500x500'); }
+  else { ss.value='1280x720'; setCanvasSize('1280x720'); }
+  renderLeftPanel(m==='logo'?'logo-bg':'templates');
+  updatePanelTabs(m);
+}
+
+function updatePanelTabs(m) {
+  const tabs = document.getElementById('left-tabs');
+  if(m==='logo') {
+    tabs.innerHTML = `
+      <div class="ptab active" data-tab="logo-bg" onclick="switchTab('logo-bg',this)">Фоны</div>
+      <div class="ptab" data-tab="logo-shapes" onclick="switchTab('logo-shapes',this)">Фигуры</div>
+      <div class="ptab" data-tab="text" onclick="switchTab('text',this)">Текст</div>
+      <div class="ptab" data-tab="badge" onclick="switchTab('badge',this)">Бейдж</div>
+      <div class="ptab" data-tab="emoji" onclick="switchTab('emoji',this)">Эмодзи</div>
+      <div class="ptab" data-tab="objects3d" onclick="switchTab('objects3d',this)">3D</div>
+      <div class="ptab" data-tab="images" onclick="switchTab('images',this)">Файл</div>
+      <div class="ptab" data-tab="logo-tools" onclick="switchTab('logo-tools',this)">Инструм.</div>
+    `;
+  } else {
+    tabs.innerHTML = `
+      <div class="ptab active" data-tab="templates" onclick="switchTab('templates',this)">Шаблоны</div>
+      <div class="ptab" data-tab="backgrounds" onclick="switchTab('backgrounds',this)">Фоны</div>
+      <div class="ptab" data-tab="text" onclick="switchTab('text',this)">Текст</div>
+      <div class="ptab" data-tab="elements" onclick="switchTab('elements',this)">Фигуры</div>
+      <div class="ptab" data-tab="badge" onclick="switchTab('badge',this)">Бейдж</div>
+      <div class="ptab" data-tab="emoji" onclick="switchTab('emoji',this)">Эмодзи</div>
+      <div class="ptab" data-tab="objects3d" onclick="switchTab('objects3d',this)">3D</div>
+      <div class="ptab" data-tab="images" onclick="switchTab('images',this)">Файл</div>
+    `;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  CANVAS SIZE
+// ═══════════════════════════════════════════════════════
+function setCanvasSize(v) {
+  if(v==='custom') {
+    const w=prompt('Ширина (px):', state.canvasW);
+    const h=prompt('Высота (px):', state.canvasH);
+    if(w&&h){state.canvasW=parseInt(w);state.canvasH=parseInt(h);}
+  } else {
+    const [w,h]=v.split('x').map(Number);
+    state.canvasW=w; state.canvasH=h;
+  }
+  applyCanvasSize();
+  fitCanvas();
+}
+
+function applyCanvasSize() {
+  const c=document.getElementById('canvas');
+  c.style.width=state.canvasW+'px';
+  c.style.height=state.canvasH+'px';
+}
+
+function fitCanvas() {
+  const area=document.getElementById('canvas-area');
+  const pad=60;
+  const sw=area.clientWidth-pad, sh=area.clientHeight-pad;
+  const scale=Math.min(sw/state.canvasW, sh/state.canvasH, 1);
+  state.zoom=scale;
+  applyZoom();
+}
+
+function changeZoom(d) {
+  state.zoom=Math.min(2, Math.max(0.1, state.zoom+d));
+  applyZoom();
+}
+
+function applyZoom() {
+  document.getElementById('canvas-wrapper').style.transform=`scale(${state.zoom})`;
+  document.getElementById('zoom-label').textContent=Math.round(state.zoom*100)+'%';
+}
+
+// ═══════════════════════════════════════════════════════
+//  BACKGROUND
+// ═══════════════════════════════════════════════════════
+const BG_PRESETS = [
+  { name:'Чёрный', css:'#000000' },
+  { name:'Темный', css:'#0a0a0c' },
+  { name:'Сетка', css:'#0a0a0c', extra:'grid' },
+  { name:'Градиент 1', css:'linear-gradient(135deg,#0a0a0c 0%,#1a1a2e 50%,#16213e 100%)' },
+  { name:'Фиолет.', css:'linear-gradient(135deg,#0d0d1a,#1a0d2e,#0d1a2e)' },
+  { name:'Закат', css:'linear-gradient(135deg,#1a0a00,#2d0d1a,#0a0020)' },
+  { name:'Кибер', css:'linear-gradient(135deg,#000a00,#001a00,#0a2000)' },
+  { name:'Океан', css:'linear-gradient(135deg,#000d1a,#001a2d,#000d2d)' },
+  { name:'Аврора', css:'linear-gradient(135deg,#0a0a1a,#1a0a2d,#002d1a)' },
+  { name:'Полночь', css:'linear-gradient(180deg,#020209,#07071a,#0d0d2a)' },
+  { name:'Металл', css:'linear-gradient(135deg,#1a1a1a,#2d2d2d,#111)' },
+  { name:'Уголь', css:'linear-gradient(145deg,#0a0a0a,#181820,#0a0a12)' },
+  { name:'Туман', css:'radial-gradient(ellipse at 50% 0%,#1a1a40 0%,#000 70%)' },
+  { name:'Звёзды', css:'#000', extra:'stars' },
+  { name:'Шум', css:'#0a0a12', extra:'noise' },
+  { name:'Mesh 1', css:'radial-gradient(ellipse at 20% 50%,#3d0066 0%,transparent 40%),radial-gradient(ellipse at 80% 20%,#006680 0%,transparent 40%),#020010' },
+  { name:'Mesh 2', css:'radial-gradient(ellipse at 70% 80%,#660033 0%,transparent 40%),radial-gradient(ellipse at 30% 20%,#003366 0%,transparent 40%),#050005' },
+  { name:'Mesh 3', css:'radial-gradient(ellipse at 50% 50%,#1a003d 0%,transparent 60%),radial-gradient(ellipse at 0% 100%,#003300 0%,transparent 40%),#000' },
+  { name:'Неон', css:'radial-gradient(ellipse at 50% 50%,#0d0d40 0%,#000 80%)' },
+  { name:'Голограм', css:'linear-gradient(135deg,#000d14,#001420,#000d0d,#001420)' },
+];
+
+function applyBg() {
+  const c=document.getElementById('canvas');
+  const b=state.bg;
+  c.style.background=b.value||b.css||'#000';
+  // remove extra effects
+  c.querySelectorAll('.bg-extra').forEach(e=>e.remove());
+  if(b.extra==='grid') {
+    const d=document.createElement('div');
+    d.className='bg-extra';
+    d.style.cssText=`position:absolute;inset:0;pointer-events:none;
+      background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
+      background-size:60px 60px;`;
+    c.appendChild(d);
+  } else if(b.extra==='stars') {
+    const d=document.createElement('div');
+    d.className='bg-extra';
+    d.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:hidden;';
+    for(let i=0;i<120;i++){
+      const s=document.createElement('div');
+      const sz=Math.random()*2.5+0.5;
+      s.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;
+        background:#fff;border-radius:50%;
+        left:${Math.random()*100}%;top:${Math.random()*100}%;
+        opacity:${Math.random()*.8+.2};`;
+      d.appendChild(s);
+    }
+    c.appendChild(d);
+  } else if(b.extra==='noise') {
+    const d=document.createElement('div');
+    d.className='bg-extra';
+    d.style.cssText=`position:absolute;inset:0;pointer-events:none;
+      opacity:.04;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size:256px 256px;`;
+    c.appendChild(d);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  LEFT PANEL CONTENT
+// ═══════════════════════════════════════════════════════
+function switchTab(tab, el) {
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderLeftPanel(tab);
+}
+
+function renderLeftPanel(tab) {
+  const c=document.getElementById('left-content');
+  c.innerHTML='';
+  switch(tab) {
+    case 'templates': renderTemplates(c); break;
+    case 'backgrounds': renderBgs(c); break;
+    case 'text': renderTextPanel(c); break;
+    case 'elements': renderElements(c); break;
+    case 'badge': renderBadgePanel(c); break;
+    case 'emoji': renderEmojiPanel(c); break;
+    case 'objects3d': renderObjects3D(c); break;
+    case 'images': renderImagesPanel(c); break;
+    case 'logo-bg': renderLogoBgs(c); break;
+    case 'logo-shapes': renderLogoShapes(c); break;
+    case 'logo-tools': renderLogoTools(c); break;
+  }
+}
+
+// TEMPLATES
+function renderTemplates(c) {
+  const postTemplates = [
+    { name:'BB Dark', fn:()=>applyTemplate('bb-dark') },
+    { name:'BB Grid', fn:()=>applyTemplate('bb-grid') },
+    { name:'Announce', fn:()=>applyTemplate('announce') },
+    { name:'News', fn:()=>applyTemplate('news') },
+    { name:'Alert', fn:()=>applyTemplate('alert') },
+    { name:'Minimal', fn:()=>applyTemplate('minimal') },
+    { name:'Gradient', fn:()=>applyTemplate('gradient') },
+    { name:'Cyber', fn:()=>applyTemplate('cyber') },
+    { name:'Space', fn:()=>applyTemplate('space') },
+    { name:'Neon', fn:()=>applyTemplate('neon') },
+    { name:'Corporate', fn:()=>applyTemplate('corporate') },
+    { name:'Aurora', fn:()=>applyTemplate('aurora') },
+  ];
+  const templateColors = [
+    ['#000','#1a1a2e'],'#0a0a0c','#0d0d1a','linear-gradient(135deg,#ff6b6b,#ffd93d)',
+    '#1a0a00','#000a00','#000d1a','#0a0a1a','#020209','#0a0a0a','#0a0a12','#0a0020'
+  ];
+  c.innerHTML=`<div class="sec-label">Шаблоны постов</div><div class="template-grid" id="tmpl-grid"></div>`;
+  const g=document.getElementById('tmpl-grid');
+  postTemplates.forEach((t,i)=>{
+    const bg=templateColors[i];
+    const div=document.createElement('div');
+    div.className='template-thumb';
+    const bgStr=Array.isArray(bg)?`linear-gradient(135deg,${bg[0]},${bg[1]})`:bg;
+    div.style.background=bgStr;
+    div.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:flex-end;padding:4px">
+      <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,.8);background:rgba(0,0,0,.4);padding:2px 5px;border-radius:3px">${t.name}</div>
+    </div>`;
+    div.onclick=t.fn;
+    g.appendChild(div);
+  });
+}
+
+const TEMPLATES = {
+  'bb-dark': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'#0a0a0c',extra:'grid'};
+    applyBg();
+    addTextEl('Blackhole Booster', state.canvasW*.04, state.canvasH*.35, {
+      fontSize:72,fontWeight:'800',fontFamily:'Syne',color:'#ffffff',
+    });
+    addTextEl('защищаем свободу твоего интернета', state.canvasW*.04, state.canvasH*.55, {
+      fontSize:28,fontWeight:'400',fontFamily:'Outfit',color:'rgba(255,255,255,.7)',
+    });
+    addBadgeEl('@BlackholeBoosterBot', state.canvasW*.04, state.canvasH*.78, {
+      bg:'rgba(255,255,255,.08)',textColor:'#fff',shape:'pill',
+    });
+  },
+  'bb-grid': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'#000',extra:'grid'};
+    applyBg();
+    addTextEl('BLACKHOLE', state.canvasW*.04, state.canvasH*.25, {
+      fontSize:96,fontWeight:'900',fontFamily:'Unbounded',color:'#ffffff',letterSpacing:'-2px',
+    });
+    addTextEl('BOOSTER', state.canvasW*.04, state.canvasH*.48, {
+      fontSize:96,fontWeight:'900',fontFamily:'Unbounded',color:'rgba(255,255,255,.2)',letterSpacing:'-2px',
+    });
+  },
+  'announce': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'linear-gradient(135deg,#0d0d1a,#1a0d2e,#0d1a2e)'};
+    applyBg();
+    addTextEl('📢 ОБЪЯВЛЕНИЕ', state.canvasW*.04, state.canvasH*.15, {
+      fontSize:22,fontWeight:'700',fontFamily:'Outfit',color:'rgba(108,99,255,.9)',
+    });
+    addTextEl('Заголовок объявления', state.canvasW*.04, state.canvasH*.35, {
+      fontSize:56,fontWeight:'800',fontFamily:'Syne',color:'#ffffff',
+    });
+    addTextEl('Описание и детали события', state.canvasW*.04, state.canvasH*.58, {
+      fontSize:24,fontWeight:'400',fontFamily:'Outfit',color:'rgba(255,255,255,.6)',
+    });
+  },
+  'news': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'linear-gradient(180deg,#020209,#07071a,#0d0d2a)'};
+    applyBg();
+    addTextEl('🗞 НОВОСТИ', state.canvasW*.04, state.canvasH*.12, {fontSize:18,fontFamily:'Outfit',color:'#6c63ff',fontWeight:'700'});
+    addTextEl('Заголовок новости', state.canvasW*.04, state.canvasH*.28, {fontSize:60,fontFamily:'Syne',color:'#fff',fontWeight:'800'});
+    addTextEl('Краткое описание новости и контекст произошедшего', state.canvasW*.04, state.canvasH*.55, {fontSize:22,fontFamily:'Outfit',color:'rgba(255,255,255,.55)'});
+  },
+  'minimal': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'#0a0a0c'};
+    applyBg();
+    addTextEl('Minimal.', state.canvasW*.05, state.canvasH*.4, {fontSize:88,fontFamily:'Playfair Display',color:'#fff',fontWeight:'900'});
+  },
+  'cyber': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'radial-gradient(ellipse at 50% 50%,#0d0d40 0%,#000 80%)'};
+    applyBg();
+    addTextEl('CYBER', state.canvasW*.04, state.canvasH*.3, {fontSize:110,fontFamily:'Bebas Neue',color:'#00d4ff',letterSpacing:'8px'});
+    addTextEl('SECURITY', state.canvasW*.04, state.canvasH*.55, {fontSize:110,fontFamily:'Bebas Neue',color:'rgba(255,255,255,.15)',letterSpacing:'8px'});
+    addBadgeEl('VPN PROTECTION', state.canvasW*.04, state.canvasH*.78, {bg:'rgba(0,212,255,.15)',textColor:'#00d4ff',shape:'rect'});
+  },
+  'space': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'#000',extra:'stars'};
+    applyBg();
+    addTextEl('SPACE', state.canvasW*.5-120, state.canvasH*.35, {fontSize:90,fontFamily:'Unbounded',color:'#fff',fontWeight:'900'});
+  },
+  'neon': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'#000'};
+    applyBg();
+    addTextEl('NEON', state.canvasW*.04, state.canvasH*.35, {fontSize:110,fontFamily:'Bebas Neue',color:'#ff6b6b',letterSpacing:'5px'});
+    addTextEl('GLOW', state.canvasW*.04, state.canvasH*.56, {fontSize:110,fontFamily:'Bebas Neue',color:'rgba(255,107,107,.2)',letterSpacing:'5px'});
+  },
+  'gradient': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'radial-gradient(ellipse at 20% 50%,#3d0066 0%,transparent 40%),radial-gradient(ellipse at 80% 20%,#006680 0%,transparent 40%),#020010'};
+    applyBg();
+    addTextEl('Gradient Post', state.canvasW*.04, state.canvasH*.4, {fontSize:70,fontFamily:'Syne',color:'#fff',fontWeight:'800'});
+  },
+  'alert': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'linear-gradient(135deg,#1a0a00,#2d0d1a,#0a0020)'};
+    applyBg();
+    addTextEl('⚠️ ВАЖНО', state.canvasW*.04, state.canvasH*.2, {fontSize:26,fontFamily:'Outfit',color:'#ffd93d',fontWeight:'700'});
+    addTextEl('Заголовок', state.canvasW*.04, state.canvasH*.38, {fontSize:66,fontFamily:'Syne',color:'#fff',fontWeight:'800'});
+  },
+  'corporate': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'linear-gradient(135deg,#1a1a1a,#2d2d2d,#111)'};
+    applyBg();
+    addTextEl('КОРПОРАТИВНЫЙ', state.canvasW*.04, state.canvasH*.32, {fontSize:54,fontFamily:'Rajdhani',color:'#fff',fontWeight:'700',letterSpacing:'4px'});
+    addTextEl('ШАБЛОН', state.canvasW*.04, state.canvasH*.5, {fontSize:54,fontFamily:'Rajdhani',color:'rgba(255,255,255,.2)',fontWeight:'700',letterSpacing:'4px'});
+  },
+  'aurora': () => {
+    clearCanvasSilent();
+    state.bg={type:'preset',value:'linear-gradient(135deg,#0a0a1a,#1a0a2d,#002d1a)'};
+    applyBg();
+    addTextEl('Aurora', state.canvasW*.04, state.canvasH*.4, {fontSize:88,fontFamily:'Playfair Display',color:'#fff',fontWeight:'400',fontStyle:'italic'});
+  },
+};
+
+function applyTemplate(name) {
+  if(TEMPLATES[name]) TEMPLATES[name]();
+  else showToast('Шаблон: '+name);
+}
+
+// BACKGROUNDS
+function renderBgs(c) {
+  c.innerHTML=`<div class="sec-label">Цвет фона</div>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Кастом</span>
+    <input class="ctrl-input" type="color" value="#0a0a0c" id="bg-custom-color" onchange="setBgColor(this.value)">
+  </div>
+  <div class="sec-label">Пресеты фона</div>
+  <div class="bg-grid" id="bg-grid"></div>
+  <div class="sec-label">Градиенты</div>
+  <div class="grad-row" style="grid-template-columns:repeat(2,1fr);" id="grad-grid"></div>`;
+
+  const g=document.getElementById('bg-grid');
+  BG_PRESETS.slice(0,12).forEach(p=>{
+    const d=document.createElement('div');
+    d.className='bg-thumb';
+    d.style.background=p.css;
+    if(p.extra==='grid') {
+      d.style.backgroundImage='linear-gradient(rgba(255,255,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.1) 1px,transparent 1px)';
+      d.style.backgroundSize='20px 20px';
+    }
+    d.innerHTML=`<div class="label">${p.name}</div>`;
+    d.onclick=()=>{state.bg={type:'preset',value:p.css,extra:p.extra};applyBg();};
+    g.appendChild(d);
+  });
+
+  const gg=document.getElementById('grad-grid');
+  BG_PRESETS.slice(12).forEach(p=>{
+    const d=document.createElement('div');
+    d.className='bg-thumb';
+    d.style.background=p.css;
+    d.innerHTML=`<div class="label">${p.name}</div>`;
+    d.onclick=()=>{state.bg={type:'preset',value:p.css,extra:p.extra};applyBg();};
+    gg.appendChild(d);
+  });
+}
+
+function setBgColor(v) {
+  state.bg={type:'solid',value:v};
+  applyBg();
+}
+
+function renderLogoBgs(c) {
+  c.innerHTML=`<div class="sec-label">Фон логотипа</div>`;
+  renderBgs(c); // reuse
+}
+
+// TEXT PANEL
+const FONTS = [
+  {name:'Syne',label:'Syne',preview:'Syne'},
+  {name:'Unbounded',label:'Unbounded',preview:'UNB'},
+  {name:'Bebas Neue',label:'Bebas Neue',preview:'BEBAS'},
+  {name:'Outfit',label:'Outfit',preview:'Outfit'},
+  {name:'Space Mono',label:'Space Mono',preview:'Mono'},
+  {name:'Playfair Display',label:'Playfair',preview:'Playfair'},
+  {name:'Rajdhani',label:'Rajdhani',preview:'Rajdhani'},
+  {name:'Russo One',label:'Russo One',preview:'Russo'},
+  {name:'Exo 2',label:'Exo 2',preview:'Exo 2'},
+  {name:'DM Sans',label:'DM Sans',preview:'DM Sans'},
+];
+
+function renderTextPanel(c) {
+  c.innerHTML=`
+  <div class="sec-label">Добавить текст</div>
+  <div style="display:flex;gap:6px;margin-bottom:8px">
+    <input class="ctrl-input" id="new-text-input" placeholder="Введите текст..." style="flex:1">
+    <button class="hdr-btn primary" onclick="addTextFromPanel()" style="padding:6px 10px;white-space:nowrap">+ Добавить</button>
+  </div>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Размер</span>
+    <input class="ctrl-input" type="number" id="new-text-size" value="48" min="8" max="300" style="width:60px">
+    <span class="ctrl-label" style="min-width:40px">Цвет</span>
+    <input class="ctrl-input" type="color" id="new-text-color" value="#ffffff">
+  </div>
+  <div class="sec-label">Шрифт</div>
+  <div class="font-grid" id="font-grid"></div>
+  <div class="sec-label">Быстрые стили</div>
+  <div style="display:flex;flex-direction:column;gap:5px" id="text-presets"></div>
+  `;
+  let selectedFont=FONTS[0].name;
+  const fg=document.getElementById('font-grid');
+  FONTS.forEach(f=>{
+    const d=document.createElement('div');
+    d.className='font-btn'+(f.name===selectedFont?' selected':'');
+    d.style.fontFamily=f.name;
+    d.textContent=f.preview;
+    d.onclick=()=>{
+      selectedFont=f.name;
+      fg.querySelectorAll('.font-btn').forEach(b=>b.classList.remove('selected'));
+      d.classList.add('selected');
+    };
+    fg.appendChild(d);
+  });
+  const presets=[
+    {label:'H1 – Заголовок',fontSize:72,fontWeight:'800',fontFamily:'Syne'},
+    {label:'H2 – Подзаголовок',fontSize:40,fontWeight:'600',fontFamily:'Outfit'},
+    {label:'Body – Текст',fontSize:24,fontWeight:'400',fontFamily:'DM Sans'},
+    {label:'CAPS – Акцент',fontSize:36,fontWeight:'700',fontFamily:'Bebas Neue',letterSpacing:'4px'},
+    {label:'Mono – Код',fontSize:22,fontWeight:'400',fontFamily:'Space Mono'},
+    {label:'Serif – Элегант.',fontSize:48,fontWeight:'400',fontFamily:'Playfair Display',fontStyle:'italic'},
+  ];
+  const tp=document.getElementById('text-presets');
+  presets.forEach(p=>{
+    const b=document.createElement('button');
+    b.style.cssText=`padding:8px 10px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);
+      color:var(--text);cursor:pointer;text-align:left;font-family:${p.fontFamily};font-size:${Math.min(p.fontSize/3,18)}px;
+      font-weight:${p.fontWeight};font-style:${p.fontStyle||'normal'};transition:all .15s;`;
+    b.textContent=p.label;
+    b.onmouseenter=()=>b.style.borderColor='var(--accent)';
+    b.onmouseleave=()=>b.style.borderColor='var(--border)';
+    b.onclick=()=>{
+      const txt=document.getElementById('new-text-input').value||'Текст';
+      const color=document.getElementById('new-text-color').value;
+      addTextEl(txt, state.canvasW*0.1, state.canvasH*0.4, {...p, color});
+    };
+    tp.appendChild(b);
+  });
+}
+
+function addTextFromPanel() {
+  const txt=document.getElementById('new-text-input').value||'Новый текст';
+  const size=parseInt(document.getElementById('new-text-size').value)||48;
+  const color=document.getElementById('new-text-color').value;
+  const selectedFontEl=document.querySelector('#font-grid .font-btn.selected');
+  const font=selectedFontEl?FONTS[Array.from(document.querySelectorAll('#font-grid .font-btn')).indexOf(selectedFontEl)].name:'Syne';
+  addTextEl(txt, state.canvasW*0.1, state.canvasH*0.4, {fontSize:size,fontFamily:font,color,fontWeight:'700'});
+}
+
+// ELEMENTS (shapes)
+const SHAPES=[
+  {label:'Прямоуг.',icon:'⬛',type:'rect',w:200,h:80,bg:'rgba(108,99,255,.4)',border:'2px solid rgba(108,99,255,.8)',radius:'8px'},
+  {label:'Круг',icon:'⚫',type:'circle',w:100,h:100,bg:'rgba(108,99,255,.4)',border:'none',radius:'50%'},
+  {label:'Линия',icon:'➖',type:'line',w:300,h:4,bg:'rgba(255,255,255,.5)',border:'none',radius:'2px'},
+  {label:'Ромб',icon:'🔷',type:'diamond',w:80,h:80,bg:'rgba(0,212,255,.4)',border:'none',radius:'0',transform:'rotate(45deg)'},
+  {label:'Треуг.',icon:'🔺',type:'triangle',w:0,h:0,special:'triangle'},
+  {label:'Скругл.',icon:'🔲',type:'rounded',w:200,h:80,bg:'rgba(255,255,255,.1)',border:'1px solid rgba(255,255,255,.3)',radius:'40px'},
+  {label:'Дуга',icon:'〇',type:'ring',w:100,h:100,bg:'transparent',border:'8px solid rgba(255,255,255,.6)',radius:'50%'},
+  {label:'Точки',icon:'⠿',type:'dots',special:'dots'},
+  {label:'Разд.',icon:'—',type:'divider',w:400,h:2,bg:'linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent)',border:'none',radius:'0'},
+  {label:'Рамка',icon:'🖼',type:'frame',w:250,h:180,bg:'transparent',border:'2px solid rgba(255,255,255,.3)',radius:'8px'},
+  {label:'Стрелка',icon:'➡',type:'arrow',special:'arrow'},
+  {label:'Звезда',icon:'⭐',type:'star',special:'star'},
+];
+
+function renderElements(c) {
+  c.innerHTML=`<div class="sec-label">Фигуры</div><div class="elem-grid" id="shapes-grid"></div>`;
+  const g=document.getElementById('shapes-grid');
+  SHAPES.forEach(s=>{
+    const b=document.createElement('div');
+    b.className='elem-btn';
+    b.innerHTML=`<div class="icon">${s.icon}</div><div>${s.label}</div>`;
+    b.onclick=()=>addShape(s);
+    g.appendChild(b);
+  });
+}
+
+function renderLogoShapes(c) {
+  c.innerHTML=`<div class="sec-label">Фигуры для логотипа</div><div class="elem-grid" id="shapes-grid"></div>`;
+  const g=document.getElementById('shapes-grid');
+  SHAPES.forEach(s=>{
+    const b=document.createElement('div');
+    b.className='elem-btn';
+    b.innerHTML=`<div class="icon">${s.icon}</div><div>${s.label}</div>`;
+    b.onclick=()=>addShape(s);
+    g.appendChild(b);
+  });
+}
+
+function renderLogoTools(c) {
+  c.innerHTML=`<div class="sec-label">Инструменты логотипа</div>
+  <div class="logo-tools-grid">
+    <div class="logo-tool-btn" onclick="addBHLogo()"><span class="icon">🌀</span>BH Лого</div>
+    <div class="logo-tool-btn" onclick="addMonogram()"><span class="icon">🅱</span>Монограмма</div>
+    <div class="logo-tool-btn" onclick="addAbstractLogo(1)"><span class="icon">△</span>Абстракт 1</div>
+    <div class="logo-tool-btn" onclick="addAbstractLogo(2)"><span class="icon">◎</span>Абстракт 2</div>
+    <div class="logo-tool-btn" onclick="addAbstractLogo(3)"><span class="icon">⬡</span>Гексагон</div>
+    <div class="logo-tool-btn" onclick="addAbstractLogo(4)"><span class="icon">✦</span>Звезда</div>
+    <div class="logo-tool-btn" onclick="addWordmark()"><span class="icon">Aa</span>Wordmark</div>
+    <div class="logo-tool-btn" onclick="addLettermark()"><span class="icon">B</span>Lettermark</div>
+  </div>
+  <div class="sec-label" style="margin-top:12px">SVG Шаблоны</div>
+  <div class="logo-tools-grid" id="svg-templates"></div>
+  `;
+}
+
+// BADGE PANEL
+function renderBadgePanel(c) {
+  c.innerHTML=`<div class="sec-label">Добавить бейдж</div>
+  <button class="hdr-btn primary" style="width:100%;justify-content:center;margin-bottom:10px" onclick="openModal('badge-modal')">
+    + Открыть конструктор бейджа
+  </button>
+  <div class="sec-label">Быстрые бейджи</div>
+  <div id="quick-badges" style="display:flex;flex-direction:column;gap:5px"></div>
+  `;
+  const qb=[
+    {text:'Blackhole Booster',bg:'rgba(255,255,255,.1)',tc:'#fff',icon:'🌀'},
+    {text:'VPN ON',bg:'rgba(0,212,255,.15)',tc:'#00d4ff',icon:'🔒'},
+    {text:'NEW',bg:'rgba(108,99,255,.3)',tc:'#fff',icon:'✨'},
+    {text:'СКОРО',bg:'rgba(255,107,107,.2)',tc:'#ff6b6b',icon:'⏳'},
+    {text:'ВАЖНО',bg:'rgba(255,217,61,.15)',tc:'#ffd93d',icon:'⚠️'},
+    {text:'@BBBot',bg:'rgba(255,255,255,.05)',tc:'rgba(255,255,255,.7)',icon:'🤖'},
+  ];
+  const qbEl=document.getElementById('quick-badges');
+  qb.forEach(b=>{
+    const div=document.createElement('div');
+    div.style.cssText=`display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;
+      background:${b.bg};color:${b.tc};font-size:12px;font-weight:600;cursor:pointer;
+      border:1px solid rgba(255,255,255,.1);transition:all .15s;margin-bottom:2px;`;
+    div.innerHTML=`${b.icon} ${b.text}`;
+    div.onmouseenter=()=>div.style.borderColor='var(--accent)';
+    div.onmouseleave=()=>div.style.borderColor='rgba(255,255,255,.1)';
+    div.onclick=()=>addBadgeEl(b.text, state.canvasW*.1, state.canvasH*.8, {bg:b.bg,textColor:b.tc,shape:'pill',icon:b.icon});
+    qbEl.appendChild(div);
+  });
+}
+
+// EMOJI PANEL
+const EMOJI_CATS = {
+  '⭐': ['⭐','🌟','💫','✨','🔥','❄️','💥','🌊','⚡','🎯','💎','👑','🏆','🎖','🥇','🎪','🎭','🎨','🎬','🎤'],
+  '😀': ['😀','😎','🤩','😍','🥳','🤔','😮','🤯','😤','💪','🙌','👏','✌️','🤟','🤙','👍','❤️','🧡','💛','💚'],
+  '🚀': ['🚀','🛸','🌍','🌙','⭐','🪐','🌌','🔭','🛰','☄️','🌠','🌃','🌆','🏙','🌇','🌉','🌁','🌐','🗺','🧭'],
+  '🔐': ['🔐','🔒','🔑','🛡','⚔️','🗡','🔫','💣','🧨','🔗','⛓','🔩','🔧','🛠','⚙️','🔬','🔭','💡','🔦','📡'],
+  '📱': ['📱','💻','🖥','⌨️','🖱','🖨','📷','📸','🎥','📹','📺','📻','🎧','🎵','🎶','📢','📣','🔊','📲','💬'],
+  '💰': ['💰','💵','💴','💷','💶','💳','🏦','📈','📉','📊','💹','🤑','💸','🏧','💱','💲','🪙','💎','🏅','🎰'],
+};
+let emojiCat='⭐', emojiSearch='';
+
+function renderEmojiPanel(c) {
+  c.innerHTML=`
+  <div class="sec-label">Эмодзи</div>
+  <input class="emoji-search" id="emoji-search" placeholder="Поиск эмодзи..." oninput="filterEmoji(this.value)">
+  <div class="emoji-categories" id="emoji-cats"></div>
+  <div class="emoji-grid" id="emoji-grid"></div>
+  `;
+  const cats=document.getElementById('emoji-cats');
+  Object.keys(EMOJI_CATS).forEach(k=>{
+    const b=document.createElement('div');
+    b.className='emoji-cat-btn'+(k===emojiCat?' active':'');
+    b.textContent=k;
+    b.onclick=()=>{
+      emojiCat=k;
+      cats.querySelectorAll('.emoji-cat-btn').forEach(e=>e.classList.remove('active'));
+      b.classList.add('active');
+      renderEmojiItems();
+    };
+    cats.appendChild(b);
+  });
+  renderEmojiItems();
+}
+
+function filterEmoji(v) {
+  emojiSearch=v;
+  renderEmojiItems();
+}
+
+function renderEmojiItems() {
+  const g=document.getElementById('emoji-grid');
+  if(!g) return;
+  let emojis=EMOJI_CATS[emojiCat]||[];
+  if(emojiSearch) {
+    emojis=Object.values(EMOJI_CATS).flat().slice(0,40);
+  }
+  g.innerHTML='';
+  emojis.forEach(e=>{
+    const d=document.createElement('div');
+    d.className='emoji-item';
+    d.textContent=e;
+    d.onclick=()=>addEmojiEl(e);
+    g.appendChild(d);
+  });
+}
+
+// 3D OBJECTS PANEL
+const OBJ3D_TYPES=[
+  {name:'Сфера',icon:'🔵',type:'sphere'},
+  {name:'Куб',icon:'📦',type:'cube'},
+  {name:'Кольцо',icon:'⭕',type:'ring'},
+  {name:'BH Лого',icon:'🌀',type:'bh'},
+  {name:'Пирамида',icon:'🔺',type:'pyramid'},
+  {name:'Кристалл',icon:'💎',type:'crystal'},
+  {name:'Тор',icon:'🍩',type:'torus'},
+  {name:'Капсула',icon:'💊',type:'capsule'},
+];
+
+function renderObjects3D(c) {
+  c.innerHTML=`<div class="sec-label">3D Объекты</div><div class="obj3d-grid" id="obj3d-grid"></div>`;
+  const g=document.getElementById('obj3d-grid');
+  OBJ3D_TYPES.forEach(o=>{
+    const b=document.createElement('div');
+    b.className='obj3d-btn';
+    b.innerHTML=`<div style="font-size:32px">${o.icon}</div><div>${o.name}</div>`;
+    b.onclick=()=>openObj3DModal(o.type);
+    g.appendChild(b);
+  });
+}
+
+// IMAGES PANEL
+function renderImagesPanel(c) {
+  c.innerHTML=`
+  <div class="sec-label">Загрузить изображение</div>
+  <div class="dropzone" onclick="document.getElementById('img-upload').click()">
+    <div style="font-size:32px;margin-bottom:8px">📁</div>
+    <div style="font-weight:600;color:var(--text2)">Нажмите или перетащите файл</div>
+    <div style="font-size:11px;margin-top:4px">PNG, JPG, SVG, WebP</div>
+    <input type="file" id="img-upload" accept="image/*" style="display:none" onchange="loadImageToCanvas(this)">
+  </div>
+  <div class="sec-label">Загрузить SVG логотип</div>
+  <div class="dropzone" onclick="document.getElementById('svg-upload').click()">
+    <div style="font-size:32px;margin-bottom:8px">🔷</div>
+    <div style="font-weight:600;color:var(--text2)">SVG / PNG Логотип</div>
+    <input type="file" id="svg-upload" accept=".svg,.png" style="display:none" onchange="loadImageToCanvas(this)">
+  </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+//  ELEMENT MANAGEMENT
+// ═══════════════════════════════════════════════════════
+function addTextEl(text, x, y, opts={}) {
+  const id='el-'+(++elId);
+  const el={
+    id, type:'text', x, y,
+    text: text||'Текст',
+    fontSize: opts.fontSize||48,
+    fontFamily: opts.fontFamily||'Syne',
+    fontWeight: opts.fontWeight||'700',
+    fontStyle: opts.fontStyle||'normal',
+    color: opts.color||'#ffffff',
+    opacity: opts.opacity||1,
+    rotation: opts.rotation||0,
+    letterSpacing: opts.letterSpacing||'0px',
+    shadow: opts.shadow||'none',
+    align: opts.align||'left',
+    lineHeight: opts.lineHeight||1.2,
+    width: 'auto', height: 'auto',
+  };
+  state.elements.push(el);
+  renderElement(el);
+  selectElement(id);
+  return el;
+}
+
+function addBadgeEl(text, x, y, opts={}) {
+  const id='el-'+(++elId);
+  const el={
+    id, type:'badge', x, y,
+    text: text||'Badge',
+    shape: opts.shape||'pill',
+    bg: opts.bg||'rgba(255,255,255,.1)',
+    textColor: opts.textColor||'#fff',
+    fontSize: 16,
+    fontFamily: 'Outfit',
+    fontWeight: '600',
+    opacity: 1,
+    rotation: 0,
+    icon: opts.icon||'',
+    logoData: state.badgeLogoData||null,
+    borderColor: opts.borderColor||'rgba(255,255,255,.2)',
+    blur: opts.blur||'12px',
+    padding: opts.padding||'8px 16px',
+  };
+  state.elements.push(el);
+  renderElement(el);
+  selectElement(id);
+  return el;
+}
+
+function addShape(s) {
+  if(s.special) {
+    addSpecialShape(s);
+    return;
+  }
+  const id='el-'+(++elId);
+  const el={
+    id, type:'shape', x: state.canvasW*.1, y: state.canvasH*.1,
+    width: s.w||100, height: s.h||100,
+    bg: s.bg||'rgba(108,99,255,.4)',
+    border: s.border||'none',
+    radius: s.radius||'8px',
+    transform: s.transform||'',
+    opacity: 1, rotation: 0,
+    shapeType: s.type,
+  };
+  state.elements.push(el);
+  renderElement(el);
+  selectElement(id);
+}
+
+function addSpecialShape(s) {
+  const id='el-'+(++elId);
+  let html='';
+  if(s.type==='triangle') {
+    html=`<div style="width:0;height:0;border-left:50px solid transparent;border-right:50px solid transparent;border-bottom:80px solid rgba(108,99,255,.6);filter:drop-shadow(0 4px 15px rgba(108,99,255,.4))"></div>`;
+  } else if(s.type==='star') {
+    html=`<div style="font-size:80px;line-height:1;filter:drop-shadow(0 0 20px rgba(255,217,61,.6))">⭐</div>`;
+  } else if(s.type==='arrow') {
+    html=`<div style="font-size:60px;line-height:1;color:#6c63ff">→</div>`;
+  } else if(s.type==='dots') {
+    html=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      ${Array(16).fill('<div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4)"></div>').join('')}
+    </div>`;
+  }
+  const el={id, type:'html', x:state.canvasW*.1, y:state.canvasH*.1, html, opacity:1, rotation:0};
+  state.elements.push(el);
+  renderElement(el);
+  selectElement(id);
+}
+
+function addEmojiEl(emoji) {
+  const id='el-'+(++elId);
+  const el={id,type:'emoji',x:state.canvasW*.3,y:state.canvasH*.3,emoji,fontSize:80,opacity:1,rotation:0};
+  state.elements.push(el);
+  renderElement(el);
+  selectElement(id);
+}
+
+function addImageEl(src, x, y, w, h) {
+  const id='el-'+(++elId);
+  const el={id,type:'image',x,y,src,width:w||200,height:h||150,opacity:1,rotation:0};
+  state.elements.push(el);
+  renderElement(el);
+  selectElement(id);
+}
+
+function addObj3DEl(type, opts={}) {
+  const id='el-'+(++elId);
+  const el={id,type:'obj3d',x:state.canvasW*.3,y:state.canvasH*.2,obj3dType:type,
+    size: opts.size||120, color1:opts.color1||'#6c63ff', color2:opts.color2||'#00d4ff',
+    rotX:opts.rotX||-20, rotY:opts.rotY||30, glow:opts.glow||20,
+    opacity:1, rotation:0};
+  state.elements.push(el);
+  renderElement(el);
+  selectElement(id);
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER ELEMENT TO DOM
+// ═══════════════════════════════════════════════════════
+function renderElement(el) {
+  const canvas=document.getElementById('canvas');
+  let dom=document.getElementById(el.id);
+  if(!dom) {
+    dom=document.createElement('div');
+    dom.id=el.id;
+    dom.className='c-element';
+    dom.innerHTML=`<div class="rotate-handle">↻</div><div class="delete-btn">×</div><div class="resize-handle"></div>`;
+    canvas.appendChild(dom);
+    setupElEvents(dom, el.id);
+  }
+  dom.style.left=el.x+'px';
+  dom.style.top=el.y+'px';
+  dom.style.opacity=el.opacity||1;
+  dom.style.transform=`rotate(${el.rotation||0}deg)`;
+  dom.style.zIndex=state.elements.indexOf(el)+1;
+
+  // content div
+  let content=dom.querySelector('.el-content');
+  if(!content){
+    content=document.createElement('div');
+    content.className='el-content';
+    dom.insertBefore(content, dom.querySelector('.rotate-handle'));
+  }
+
+  if(el.type==='text') {
+    content.className='el-content c-text';
+    content.style.cssText=`
+      font-size:${el.fontSize}px;
+      font-family:'${el.fontFamily}',sans-serif;
+      font-weight:${el.fontWeight};
+      font-style:${el.fontStyle||'normal'};
+      color:${el.color};
+      letter-spacing:${el.letterSpacing||'0px'};
+      text-shadow:${el.shadow||'none'};
+      line-height:${el.lineHeight||1.2};
+      white-space:pre;
+    `;
+    content.textContent=el.text;
+    dom.style.width='auto'; dom.style.height='auto';
+  } else if(el.type==='badge') {
+    let rr=el.shape==='pill'?'100px':el.shape==='rect'?'10px':'5px';
+    content.className='el-content';
+    content.style.cssText=`
+      display:flex;align-items:center;gap:8px;
+      padding:${el.padding||'8px 16px'};
+      border-radius:${rr};
+      background:${el.bg};
+      backdrop-filter:blur(${el.blur||'12px'});
+      border:1px solid ${el.borderColor||'rgba(255,255,255,.2)'};
+      white-space:nowrap;
+      font-family:'${el.fontFamily||'Outfit'}',sans-serif;
+      font-weight:${el.fontWeight||'600'};
+      font-size:${el.fontSize||16}px;
+      color:${el.textColor};
+    `;
+    let logoHtml='';
+    if(el.logoData) {
+      logoHtml=`<img src="${el.logoData}" style="width:24px;height:24px;border-radius:50%;object-fit:cover">`;
+    } else if(el.icon) {
+      logoHtml=`<span style="font-size:${(el.fontSize||16)+2}px">${el.icon}</span>`;
+    }
+    content.innerHTML=`${logoHtml}<span>${el.text}</span>`;
+    dom.style.width='auto'; dom.style.height='auto';
+  } else if(el.type==='shape') {
+    content.className='el-content c-shape';
+    content.style.cssText=`
+      width:${el.width}px; height:${el.height}px;
+      background:${el.bg};
+      border:${el.border||'none'};
+      border-radius:${el.radius};
+      transform:${el.transform||''};
+    `;
+    dom.style.width=el.width+'px'; dom.style.height=el.height+'px';
+  } else if(el.type==='emoji') {
+    content.className='el-content c-emoji';
+    content.style.cssText=`font-size:${el.fontSize}px;line-height:1;`;
+    content.textContent=el.emoji;
+    dom.style.width='auto'; dom.style.height='auto';
+  } else if(el.type==='image') {
+    content.className='el-content';
+    content.style.cssText=`width:${el.width}px;height:${el.height}px;overflow:hidden;`;
+    content.innerHTML=`<img src="${el.src}" style="width:100%;height:100%;object-fit:contain;">`;
+    dom.style.width=el.width+'px'; dom.style.height=el.height+'px';
+  } else if(el.type==='obj3d') {
+    content.className='el-content';
+    content.innerHTML=build3DHTML(el);
+    dom.style.width=el.size+'px'; dom.style.height=el.size+'px';
+  } else if(el.type==='html') {
+    content.className='el-content';
+    content.innerHTML=el.html;
+    dom.style.width='auto'; dom.style.height='auto';
+  }
+}
+
+function build3DHTML(el) {
+  const s=el.size, c1=el.color1, c2=el.color2, g=el.glow;
+  switch(el.obj3dType) {
+    case 'sphere':
+      return `<div style="width:${s}px;height:${s}px;border-radius:50%;
+        background:radial-gradient(circle at 35% 35%,#fff,${c1} 40%,${c2} 80%,#000);
+        box-shadow:inset -${s*.1}px -${s*.1}px ${s*.3}px rgba(0,0,0,.6),${s*.05}px ${s*.05}px ${g}px ${c1}44;"></div>`;
+    case 'cube':
+      return `<div style="perspective:${s*2}px;width:${s}px;height:${s}px">
+        <div style="width:${s*.7}px;height:${s*.7}px;transform-style:preserve-3d;transform:rotateX(${el.rotX}deg) rotateY(${el.rotY}deg);position:relative;margin:auto;margin-top:${s*.15}px">
+          <div style="position:absolute;width:${s*.7}px;height:${s*.7}px;background:${c1}cc;border:1px solid rgba(255,255,255,.3);transform:translateZ(${s*.35}px)"></div>
+          <div style="position:absolute;width:${s*.7}px;height:${s*.7}px;background:${c1}99;border:1px solid rgba(255,255,255,.2);transform:rotateY(180deg) translateZ(${s*.35}px)"></div>
+          <div style="position:absolute;width:${s*.7}px;height:${s*.7}px;background:${c2}99;border:1px solid rgba(255,255,255,.2);transform:rotateY(90deg) translateZ(${s*.35}px)"></div>
+          <div style="position:absolute;width:${s*.7}px;height:${s*.7}px;background:${c2}cc;border:1px solid rgba(255,255,255,.3);transform:rotateY(-90deg) translateZ(${s*.35}px)"></div>
+          <div style="position:absolute;width:${s*.7}px;height:${s*.7}px;background:#fff3;border:1px solid rgba(255,255,255,.4);transform:rotateX(90deg) translateZ(${s*.35}px)"></div>
+          <div style="position:absolute;width:${s*.7}px;height:${s*.7}px;background:#0003;transform:rotateX(-90deg) translateZ(${s*.35}px)"></div>
+        </div></div>`;
+    case 'ring':
+      return `<div style="width:${s}px;height:${s}px;border:${s*.12}px solid ${c1};border-radius:50%;
+        box-shadow:0 0 ${g}px ${c1},0 0 ${g*2}px ${c1}44,inset 0 0 ${g*.5}px ${c2}44;"></div>`;
+    case 'bh':
+      return `<svg width="${s}" height="${s}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs><filter id="glow${el.id}"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <circle cx="50" cy="50" r="28" fill="none" stroke="${c1}" stroke-width="8" filter="url(#glow${el.id})"/>
+        <ellipse cx="50" cy="55" rx="40" ry="11" fill="${c1}" opacity=".9"/>
+        <ellipse cx="50" cy="55" rx="22" ry="6" fill="#000"/>
+        <circle cx="50" cy="50" r="10" fill="#000"/>
+        <circle cx="50" cy="50" r="4" fill="${c2}"/>
+      </svg>`;
+    case 'crystal':
+      return `<svg width="${s}" height="${s}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,5 85,30 85,70 50,95 15,70 15,30" fill="${c1}33" stroke="${c1}" stroke-width="1.5"/>
+        <polygon points="50,5 85,30 50,50" fill="${c2}55"/>
+        <polygon points="50,5 15,30 50,50" fill="${c1}55"/>
+        <polygon points="50,95 85,70 50,50" fill="${c1}33"/>
+        <polygon points="50,95 15,70 50,50" fill="${c2}33"/>
+      </svg>`;
+    case 'pyramid':
+      return `<svg width="${s}" height="${s}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,10 90,80 10,80" fill="${c1}88" stroke="${c1}" stroke-width="1.5"/>
+        <polygon points="50,10 90,80 50,60" fill="${c2}66"/>
+        <polygon points="50,10 10,80 50,60" fill="${c1}44"/>
+        <polygon points="10,80 90,80 50,60" fill="#0006"/>
+      </svg>`;
+    case 'torus':
+      return `<div style="width:${s}px;height:${s}px;position:relative;display:flex;align-items:center;justify-content:center">
+        <div style="width:${s*.8}px;height:${s*.8}px;border:${s*.14}px solid ${c1};border-radius:50%;
+          box-shadow:0 0 ${g}px ${c1},${s*.04}px ${s*.04}px 0 ${s*.04}px ${c2}66;
+          transform:rotateX(60deg);"></div>
+      </div>`;
+    case 'capsule':
+      return `<div style="width:${s*.5}px;height:${s}px;border-radius:${s*.25}px;
+        background:linear-gradient(135deg,${c1},${c2});
+        box-shadow:inset -${s*.06}px -${s*.06}px ${s*.15}px rgba(0,0,0,.4),0 0 ${g}px ${c1}44;"></div>`;
+    default:
+      return `<div style="width:${s}px;height:${s}px;border-radius:50%;background:${c1};"></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  ELEMENT EVENTS (drag, resize, rotate)
+// ═══════════════════════════════════════════════════════
+function setupElEvents(dom, id) {
+  // drag
+  dom.addEventListener('mousedown', e=>{
+    if(e.target.classList.contains('resize-handle')||
+       e.target.classList.contains('rotate-handle')||
+       e.target.classList.contains('delete-btn')) return;
+    e.preventDefault();
+    selectElement(id);
+    dragEl=id;
+    dragStartX=e.clientX; dragStartY=e.clientY;
+    const el=getEl(id);
+    elStartX=el.x; elStartY=el.y;
+  });
+  // resize
+  dom.querySelector('.resize-handle').addEventListener('mousedown',e=>{
+    e.preventDefault(); e.stopPropagation();
+    resizing=id;
+    dragStartX=e.clientX; dragStartY=e.clientY;
+    const el=getEl(id);
+    elStartX=el.width||100; elStartY=el.height||100;
+  });
+  // rotate
+  dom.querySelector('.rotate-handle').addEventListener('mousedown',e=>{
+    e.preventDefault(); e.stopPropagation();
+    rotating=id;
+    const el=getEl(id);
+    const rect=dom.getBoundingClientRect();
+    const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+    dom._cx=cx; dom._cy=cy; dom._startAngle=el.rotation||0;
+    dom._startMouse=Math.atan2(e.clientY-cy, e.clientX-cx)*(180/Math.PI);
+  });
+  // delete
+  dom.querySelector('.delete-btn').addEventListener('click',e=>{
+    e.stopPropagation();
+    deleteEl(id);
+  });
+  // double-click to edit text
+  dom.addEventListener('dblclick',e=>{
+    const el=getEl(id);
+    if(el&&el.type==='text') {
+      const newText=prompt('Редактировать текст:', el.text);
+      if(newText!==null) { el.text=newText; renderElement(el); }
+    }
+  });
+}
+
+document.addEventListener('mousemove',e=>{
+  if(dragEl) {
+    const el=getEl(dragEl);
+    el.x=elStartX+(e.clientX-dragStartX)/state.zoom;
+    el.y=elStartY+(e.clientY-dragStartY)/state.zoom;
+    const dom=document.getElementById(dragEl);
+    dom.style.left=el.x+'px';
+    dom.style.top=el.y+'px';
+  }
+  if(resizing) {
+    const el=getEl(resizing);
+    const dx=(e.clientX-dragStartX)/state.zoom;
+    const dy=(e.clientY-dragStartY)/state.zoom;
+    if(el.type==='text'||el.type==='emoji') {
+      el.fontSize=Math.max(8,elStartX+dx*0.5);
+    } else {
+      el.width=Math.max(20,elStartX+dx);
+      el.height=Math.max(20,elStartY+dy);
+    }
+    renderElement(el);
+    if(state.selected===resizing) renderProps(el);
+  }
+  if(rotating) {
+    const dom=document.getElementById(rotating);
+    const angle=Math.atan2(e.clientY-dom._cy, e.clientX-dom._cx)*(180/Math.PI);
+    const el=getEl(rotating);
+    el.rotation=dom._startAngle+(angle-dom._startMouse);
+    dom.style.transform=`rotate(${el.rotation}deg)`;
+    if(state.selected===rotating) {
+      const inp=document.getElementById('prop-rotation');
+      if(inp) inp.value=Math.round(el.rotation);
+    }
+  }
+});
+
+document.addEventListener('mouseup',()=>{ dragEl=null; resizing=false; rotating=false; });
+
+// click outside deselects
+document.getElementById('canvas').addEventListener('click',e=>{
+  if(e.target===document.getElementById('canvas')) deselectAll();
+});
+
+function selectElement(id) {
+  deselectAll();
+  state.selected=id;
+  const dom=document.getElementById(id);
+  if(dom) dom.classList.add('selected');
+  renderProps(getEl(id));
+}
+
+function deselectAll() {
+  state.selected=null;
+  document.querySelectorAll('.c-element').forEach(e=>e.classList.remove('selected'));
+  renderProps(null);
+}
+
+function deleteEl(id) {
+  state.elements=state.elements.filter(e=>e.id!==id);
+  const dom=document.getElementById(id);
+  if(dom) dom.remove();
+  if(state.selected===id) deselectAll();
+}
+
+function getEl(id) { return state.elements.find(e=>e.id===id); }
+
+// ═══════════════════════════════════════════════════════
+//  PROPERTIES PANEL
+// ═══════════════════════════════════════════════════════
+function renderProps(el) {
+  const p=document.getElementById('props');
+  if(!el) {
+    p.innerHTML=`
+    <div class="sec-label">Холст</div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Ширина</span>
+      <input class="ctrl-input" type="number" value="${state.canvasW}" onchange="state.canvasW=parseInt(this.value);applyCanvasSize()">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Высота</span>
+      <input class="ctrl-input" type="number" value="${state.canvasH}" onchange="state.canvasH=parseInt(this.value);applyCanvasSize()">
+    </div>
+    <div class="divider"></div>
+    <div class="sec-label">Фон холста</div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Цвет</span>
+      <input class="ctrl-input" type="color" value="#0a0a0c" onchange="state.bg={type:'solid',value:this.value};applyBg()">
+    </div>
+    <div class="divider"></div>
+    <div class="sec-label">Слои</div>
+    <div id="layers-list"></div>
+    `;
+    renderLayers();
+    return;
+  }
+  let html=`<div class="sec-label">${elTypeLabel(el.type)}</div>`;
+
+  // Position
+  html+=`
+  <div class="ctrl-row">
+    <span class="ctrl-label">X</span>
+    <input class="ctrl-input" type="number" value="${Math.round(el.x)}" id="prop-x" onchange="updateProp('x',parseFloat(this.value))">
+    <span class="ctrl-label" style="min-width:30px">Y</span>
+    <input class="ctrl-input" type="number" value="${Math.round(el.y)}" id="prop-y" onchange="updateProp('y',parseFloat(this.value))">
+  </div>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Поворот</span>
+    <input class="ctrl-input" type="range" min="-180" max="180" value="${Math.round(el.rotation||0)}" id="prop-rotation"
+      oninput="updateProp('rotation',parseFloat(this.value));document.getElementById('prop-rot-val').textContent=Math.round(this.value)+'°'">
+    <span id="prop-rot-val" style="min-width:32px;color:var(--text2);font-size:11px">${Math.round(el.rotation||0)}°</span>
+  </div>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Прозр.</span>
+    <input class="ctrl-input" type="range" min="0" max="1" step=".01" value="${el.opacity||1}" id="prop-opacity"
+      oninput="updateProp('opacity',parseFloat(this.value))">
+  </div>
+  <div class="divider"></div>`;
+
+  if(el.type==='text') {
+    html+=`
+    <div class="ctrl-row">
+      <span class="ctrl-label">Текст</span>
+      <input class="ctrl-input" value="${el.text.replace(/"/g,'&quot;')}" onchange="updateProp('text',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Размер</span>
+      <input class="ctrl-input" type="number" value="${el.fontSize}" onchange="updateProp('fontSize',parseFloat(this.value))">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Шрифт</span>
+      <select class="ctrl-input" onchange="updateProp('fontFamily',this.value)">
+        ${FONTS.map(f=>`<option value="${f.name}" ${f.name===el.fontFamily?'selected':''}>${f.label}</option>`).join('')}
+      </select>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Жирный</span>
+      <select class="ctrl-input" onchange="updateProp('fontWeight',this.value)">
+        ${['300','400','500','600','700','800','900'].map(w=>`<option ${w===el.fontWeight?'selected':''}>${w}</option>`).join('')}
+      </select>
+      <span class="ctrl-label" style="min-width:36px">Курсив</span>
+      <select class="ctrl-input" onchange="updateProp('fontStyle',this.value)">
+        <option value="normal" ${el.fontStyle==='normal'?'selected':''}>Нет</option>
+        <option value="italic" ${el.fontStyle==='italic'?'selected':''}>Курсив</option>
+      </select>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Цвет</span>
+      <input class="ctrl-input" type="color" value="${hexFromColor(el.color)}" onchange="updateProp('color',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Межбукв.</span>
+      <input class="ctrl-input" value="${el.letterSpacing||'0px'}" onchange="updateProp('letterSpacing',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Межстроч.</span>
+      <input class="ctrl-input" type="number" step=".1" value="${el.lineHeight||1.2}" onchange="updateProp('lineHeight',parseFloat(this.value))">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Тень</span>
+      <input class="ctrl-input" value="${el.shadow||'none'}" placeholder="2px 2px 8px #000" onchange="updateProp('shadow',this.value)">
+    </div>
+    <div class="sec-label">Быстрые эффекты</div>
+    <div class="ctrl-btn-row">
+      <div class="ctrl-btn" onclick="updateProp('shadow','2px 2px 20px rgba(0,0,0,.8)')">Тень</div>
+      <div class="ctrl-btn" onclick="updateProp('shadow','0 0 20px currentColor')">Свечение</div>
+      <div class="ctrl-btn" onclick="updateProp('shadow','none')">Сброс</div>
+    </div>
+    <div class="sec-label">Быстрые цвета</div>
+    <div class="swatch-row">
+      ${['#ffffff','#000000','#6c63ff','#00d4ff','#ff6b6b','#ffd93d','#11998e','#f72585'].map(c=>
+        `<div class="swatch ${el.color===c?'active':''}" style="background:${c}" onclick="updateProp('color','${c}')"></div>`
+      ).join('')}
+    </div>
+    `;
+  }
+
+  if(el.type==='badge') {
+    html+=`
+    <div class="ctrl-row">
+      <span class="ctrl-label">Текст</span>
+      <input class="ctrl-input" value="${el.text}" onchange="updateProp('text',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Форма</span>
+      <select class="ctrl-input" onchange="updateProp('shape',this.value)">
+        <option value="pill" ${el.shape==='pill'?'selected':''}>Пилюля</option>
+        <option value="rect" ${el.shape==='rect'?'selected':''}>Прямоуг.</option>
+        <option value="square" ${el.shape==='square'?'selected':''}>Квадрат</option>
+      </select>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Фон</span>
+      <input class="ctrl-input" value="${el.bg}" onchange="updateProp('bg',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Цвет текста</span>
+      <input class="ctrl-input" type="color" value="${hexFromColor(el.textColor)}" onchange="updateProp('textColor',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Размер шрифта</span>
+      <input class="ctrl-input" type="number" value="${el.fontSize||16}" onchange="updateProp('fontSize',parseFloat(this.value))">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Граница</span>
+      <input class="ctrl-input" value="${el.borderColor||'rgba(255,255,255,.2)'}" onchange="updateProp('borderColor',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Blur</span>
+      <input class="ctrl-input" value="${el.blur||'12px'}" onchange="updateProp('blur',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Иконка</span>
+      <input class="ctrl-input" value="${el.icon||''}" placeholder="Эмодзи" onchange="updateProp('icon',this.value)">
+    </div>
+    <div class="sec-label">Загрузить логотип</div>
+    <div class="dropzone" onclick="document.getElementById('badge-logo-replace').click()" style="padding:8px">
+      Заменить лого
+      <input type="file" id="badge-logo-replace" accept="image/*" style="display:none"
+        onchange="loadBadgeLogoInline(this,'${el.id}')">
+    </div>
+    `;
+  }
+
+  if(el.type==='shape') {
+    html+=`
+    <div class="ctrl-row">
+      <span class="ctrl-label">Ширина</span>
+      <input class="ctrl-input" type="number" value="${el.width}" onchange="updateProp('width',parseFloat(this.value))">
+      <span class="ctrl-label" style="min-width:36px">Высота</span>
+      <input class="ctrl-input" type="number" value="${el.height}" onchange="updateProp('height',parseFloat(this.value))">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Фон</span>
+      <input class="ctrl-input" value="${el.bg}" onchange="updateProp('bg',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Граница</span>
+      <input class="ctrl-input" value="${el.border||'none'}" onchange="updateProp('border',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Радиус</span>
+      <input class="ctrl-input" value="${el.radius||'8px'}" onchange="updateProp('radius',this.value)">
+    </div>
+    <div class="sec-label">Цвет заливки</div>
+    <div class="swatch-row">
+      ${['rgba(108,99,255,.4)','rgba(0,212,255,.4)','rgba(255,107,107,.4)','rgba(255,217,61,.4)','rgba(255,255,255,.15)','rgba(0,0,0,.6)'].map(c=>
+        `<div class="swatch" style="background:${c}" onclick="updateProp('bg','${c}')"></div>`
+      ).join('')}
+    </div>
+    `;
+  }
+
+  if(el.type==='emoji') {
+    html+=`
+    <div class="ctrl-row">
+      <span class="ctrl-label">Эмодзи</span>
+      <input class="ctrl-input" value="${el.emoji}" onchange="updateProp('emoji',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Размер</span>
+      <input class="ctrl-input" type="number" value="${el.fontSize}" onchange="updateProp('fontSize',parseFloat(this.value))">
+    </div>
+    `;
+  }
+
+  if(el.type==='obj3d') {
+    html+=`
+    <div class="ctrl-row">
+      <span class="ctrl-label">Размер</span>
+      <input class="ctrl-input" type="number" value="${el.size}" onchange="updateProp('size',parseFloat(this.value))">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Цвет 1</span>
+      <input class="ctrl-input" type="color" value="${el.color1}" onchange="updateProp('color1',this.value)">
+      <span class="ctrl-label" style="min-width:40px">Цвет 2</span>
+      <input class="ctrl-input" type="color" value="${el.color2}" onchange="updateProp('color2',this.value)">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Свечение</span>
+      <input class="ctrl-input" type="range" min="0" max="80" value="${el.glow}" oninput="updateProp('glow',parseFloat(this.value))">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">RotX</span>
+      <input class="ctrl-input" type="range" min="-180" max="180" value="${el.rotX}" oninput="updateProp('rotX',parseFloat(this.value))">
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">RotY</span>
+      <input class="ctrl-input" type="range" min="-180" max="180" value="${el.rotY}" oninput="updateProp('rotY',parseFloat(this.value))">
+    </div>
+    `;
+  }
+
+  if(el.type==='image') {
+    html+=`
+    <div class="ctrl-row">
+      <span class="ctrl-label">Ширина</span>
+      <input class="ctrl-input" type="number" value="${el.width}" onchange="updateProp('width',parseFloat(this.value))">
+      <span class="ctrl-label" style="min-width:36px">Высота</span>
+      <input class="ctrl-input" type="number" value="${el.height}" onchange="updateProp('height',parseFloat(this.value))">
+    </div>
+    `;
+  }
+
+  // Actions
+  html+=`
+  <div class="divider"></div>
+  <div class="ctrl-btn-row">
+    <div class="ctrl-btn" onclick="bringForward()">↑ Вперёд</div>
+    <div class="ctrl-btn" onclick="sendBackward()">↓ Назад</div>
+    <div class="ctrl-btn" onclick="duplicateEl()">⧉ Копия</div>
+  </div>
+  <div class="ctrl-btn-row">
+    <div class="ctrl-btn" onclick="deleteEl(state.selected)" style="color:var(--accent3);border-color:rgba(255,107,107,.3)">🗑 Удалить</div>
+  </div>
+  `;
+
+  p.innerHTML=html;
+}
+
+function elTypeLabel(type) {
+  const m={text:'Текст ✏',badge:'Бейдж 🏷',shape:'Фигура ◻',emoji:'Эмодзи 😀',image:'Изображение 🖼',obj3d:'3D Объект 🎲',html:'Элемент'};
+  return m[type]||'Элемент';
+}
+
+function updateProp(key, value) {
+  const el=getEl(state.selected);
+  if(!el) return;
+  el[key]=value;
+  renderElement(el);
+}
+
+function hexFromColor(c) {
+  if(!c) return '#ffffff';
+  if(c.startsWith('#')&&c.length>=7) return c.slice(0,7);
+  return '#ffffff';
+}
+
+function renderLayers() {
+  const el=document.getElementById('layers-list');
+  if(!el) return;
+  el.innerHTML=[...state.elements].reverse().map(e=>`
+    <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:5px;cursor:pointer;
+      background:${state.selected===e.id?'rgba(108,99,255,.15)':'transparent'};
+      border:1px solid ${state.selected===e.id?'var(--accent)':'transparent'};margin-bottom:3px"
+      onclick="selectElement('${e.id}')">
+      <span style="font-size:14px">${{text:'T',badge:'🏷',shape:'◻',emoji:'😀',image:'🖼',obj3d:'🎲',html:'◈'}[e.type]||'?'}</span>
+      <span style="font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">
+        ${e.text||e.emoji||e.obj3dType||e.type}
+      </span>
+    </div>
+  `).join('');
+}
+
+function bringForward() {
+  const idx=state.elements.findIndex(e=>e.id===state.selected);
+  if(idx<state.elements.length-1) {
+    [state.elements[idx],state.elements[idx+1]]=[state.elements[idx+1],state.elements[idx]];
+    state.elements.forEach(e=>{ const d=document.getElementById(e.id); if(d) d.style.zIndex=state.elements.indexOf(e)+1; });
+  }
+}
+
+function sendBackward() {
+  const idx=state.elements.findIndex(e=>e.id===state.selected);
+  if(idx>0) {
+    [state.elements[idx],state.elements[idx-1]]=[state.elements[idx-1],state.elements[idx]];
+    state.elements.forEach(e=>{ const d=document.getElementById(e.id); if(d) d.style.zIndex=state.elements.indexOf(e)+1; });
+  }
+}
+
+function duplicateEl() {
+  const el=getEl(state.selected);
+  if(!el) return;
+  const clone={...el, id:'el-'+(++elId), x:el.x+20, y:el.y+20};
+  state.elements.push(clone);
+  renderElement(clone);
+  selectElement(clone.id);
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+let _badgeShape='pill', _badgeBg='rgba(255,255,255,.12)', _badgeLogoData=null;
+
+function selectBadgeShape(btn, shape) {
+  document.querySelectorAll('.badge-shape-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  _badgeShape=shape;
+}
+
+function setBadgeGrad(g) { _badgeBg=g; document.getElementById('badge-bg-color').value=g.startsWith('#')?g:'#ffffff'; }
+
+function loadBadgeLogo(inp) {
+  const f=inp.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    _badgeLogoData=e.target.result;
+    document.getElementById('badge-logo-preview').style.display='block';
+    document.getElementById('badge-logo-img').src=_badgeLogoData;
+  };
+  r.readAsDataURL(f);
+}
+
+function clearBadgeLogo() { _badgeLogoData=null; document.getElementById('badge-logo-preview').style.display='none'; }
+
+function addBadge() {
+  const text=document.getElementById('badge-text-input').value||'Badge';
+  const bg=_badgeBg||document.getElementById('badge-bg-color').value;
+  const textColor=document.getElementById('badge-text-color').value;
+  addBadgeEl(text, state.canvasW*.1, state.canvasH*.8, {
+    bg, textColor, shape:_badgeShape, logoData:_badgeLogoData
+  });
+  closeModal('badge-modal');
+}
+
+// 3D modal
+let _obj3dType='sphere';
+function openObj3DModal(type) {
+  _obj3dType=type;
+  document.getElementById('obj3d-modal').classList.add('open');
+  updateObj3DPreview();
+}
+
+function updateObj3DPreview() {
+  const el={
+    id:'preview', obj3dType:_obj3dType,
+    size:parseInt(document.getElementById('obj3d-size').value)||120,
+    color1:document.getElementById('obj3d-color1').value,
+    color2:document.getElementById('obj3d-color2').value,
+    rotX:parseInt(document.getElementById('obj3d-rotx').value)||-20,
+    rotY:parseInt(document.getElementById('obj3d-roty').value)||30,
+    glow:parseInt(document.getElementById('obj3d-glow').value)||20,
+  };
+  const pv=document.getElementById('obj3d-preview-large');
+  pv.innerHTML=`<div style="transform:scale(.8)">${build3DHTML(el)}</div>`;
+}
+
+['obj3d-size','obj3d-color1','obj3d-color2','obj3d-rotx','obj3d-roty','obj3d-glow'].forEach(id=>{
+  setTimeout(()=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('input',()=>{
+      document.getElementById('obj3d-size-val').textContent=document.getElementById('obj3d-size').value+'px';
+      updateObj3DPreview();
+    });
+  },500);
+});
+
+function addObj3D() {
+  addObj3DEl(_obj3dType, {
+    size:parseInt(document.getElementById('obj3d-size').value)||120,
+    color1:document.getElementById('obj3d-color1').value,
+    color2:document.getElementById('obj3d-color2').value,
+    rotX:parseInt(document.getElementById('obj3d-rotx').value)||-20,
+    rotY:parseInt(document.getElementById('obj3d-roty').value)||30,
+    glow:parseInt(document.getElementById('obj3d-glow').value)||20,
+  });
+  closeModal('obj3d-modal');
+}
+
+// ═══════════════════════════════════════════════════════
+//  FILE UPLOAD
+// ═══════════════════════════════════════════════════════
+function loadImageToCanvas(inp) {
+  const f=inp.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const maxW=state.canvasW*.5, maxH=state.canvasH*.5;
+      let w=img.width, h=img.height;
+      if(w>maxW){const r=maxW/w;w*=r;h*=r;}
+      if(h>maxH){const r=maxH/h;w*=r;h*=r;}
+      addImageEl(e.target.result, state.canvasW*.25, state.canvasH*.25, w, h);
+    };
+    img.src=e.target.result;
+  };
+  r.readAsDataURL(f);
+}
+
+function loadBadgeLogoInline(inp, elId) {
+  const f=inp.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const el=getEl(elId);
+    if(el){ el.logoData=e.target.result; renderElement(el); }
+  };
+  r.readAsDataURL(f);
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOGO TOOLS
+// ═══════════════════════════════════════════════════════
+function addBHLogo() {
+  const id='el-'+(++elId);
+  const size=120;
+  const el={
+    id,type:'obj3d',x:state.canvasW*.4,y:state.canvasH*.3,
+    obj3dType:'bh',size,color1:'#ffffff',color2:'#ffffff',
+    rotX:0,rotY:0,glow:0,opacity:1,rotation:0
+  };
+  state.elements.push(el);
+  renderElement(el);
+  selectElement(id);
+}
+
+function addMonogram() {
+  addTextEl('BB', state.canvasW*.35, state.canvasH*.3, {
+    fontSize:140,fontFamily:'Unbounded',fontWeight:'900',color:'#ffffff',letterSpacing:'-4px'
+  });
+}
+
+function addAbstractLogo(n) {
+  const shapes=[
+    {type:'circle',w:120,h:120,bg:'transparent',border:'8px solid #fff',radius:'50%'},
+    {type:'ring',w:100,h:100,bg:'transparent',border:'12px solid #6c63ff',radius:'50%'},
+    {type:'rect',w:100,h:100,bg:'rgba(108,99,255,.6)',border:'none',radius:'16px'},
+    {type:'diamond',w:90,h:90,bg:'rgba(0,212,255,.6)',border:'none',radius:'0',transform:'rotate(45deg)'},
+  ];
+  addShape({...shapes[n-1],label:'',icon:'',extra:true});
+}
+
+function addWordmark() {
+  addTextEl('BLACKHOLE', state.canvasW*.2, state.canvasH*.3, {
+    fontSize:52,fontFamily:'Rajdhani',fontWeight:'700',color:'#fff',letterSpacing:'8px'
+  });
+}
+
+function addLettermark() {
+  addTextEl('B', state.canvasW*.38, state.canvasH*.2, {
+    fontSize:180,fontFamily:'Unbounded',fontWeight:'900',color:'#fff'
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function clearCanvas() {
+  if(!confirm('Очистить холст?')) return;
+  clearCanvasSilent();
+}
+
+function clearCanvasSilent() {
+  state.elements=[];
+  document.getElementById('canvas').querySelectorAll('.c-element').forEach(e=>e.remove());
+  deselectAll();
+}
+
+function undoAction() { showToast('История действий в разработке'); }
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  EXPORT
+// ═══════════════════════════════════════════════════════
+async function exportImage() {
+  deselectAll();
+  showToast('⏳ Экспортируем...');
+  const canvas=document.getElementById('canvas');
+  const origTransform=document.getElementById('canvas-wrapper').style.transform;
+  document.getElementById('canvas-wrapper').style.transform='scale(1)';
+  await new Promise(r=>setTimeout(r,100));
+  try {
+    const c=await html2canvas(canvas,{
+      scale:2, useCORS:true, allowTaint:true,
+      width:state.canvasW, height:state.canvasH,
+      backgroundColor:null,
+    });
+    const a=document.createElement('a');
+    a.download='bdesign-export.png';
+    a.href=c.toDataURL('image/png',1.0);
+    a.click();
+    showToast('✅ Сохранено!');
+  } catch(e) {
+    showToast('⚠ Ошибка экспорта');
+    console.error(e);
+  }
+  document.getElementById('canvas-wrapper').style.transform=origTransform;
+}
+
+// keyboard shortcuts
+document.addEventListener('keydown',e=>{
+  if((e.key==='Delete'||e.key==='Backspace')&&state.selected&&e.target===document.body) {
+    deleteEl(state.selected);
+  }
+  if(e.key==='Escape') deselectAll();
+  if(e.ctrlKey&&e.key==='d'&&state.selected) { e.preventDefault(); duplicateEl(); }
+  if(e.ctrlKey&&e.key==='ArrowUp'&&state.selected) { e.preventDefault(); bringForward(); }
+  if(e.ctrlKey&&e.key==='ArrowDown'&&state.selected) { e.preventDefault(); sendBackward(); }
+});
+
+// Init default template
+setTimeout(()=>{
+  state.bg={type:'preset',value:'#0a0a0c',extra:'grid'};
+  applyBg();
+  showToast('👋 Добро пожаловать в BDesign!');
+},300);
+</script>
+</body>
+</html>
